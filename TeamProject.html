@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Anonymous Survey</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .checkbox-label {
+            display: block;
+            cursor: pointer;
+        }
+
+        .complaints-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 100px;
+            margin-top: 10px;
+        }
+
+        #submit-button-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #submit-button,
+        #log-off-button,
+        #home-button {
+            display: inline-block;
+            width: 100px;
+            padding: 10px 20px;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        #submit-button {
+            background-color: #008000;
+        }
+
+        #submit-button:hover {
+            background-color: #005200;
+        }
+
+        #log-off-button {
+            background-color: #ff0000;
+            margin-right: 10px;
+        }
+
+        #log-off-button:hover {
+            background-color: #cc0000;
+        }
+
+        #home-button {
+            background-color: #007bff;
+            margin-left: 10px;
+        }
+
+        #home-button:hover {
+            background-color: #0056b3;
+        }
+
+        #message {
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        #additional-comments {
+            width: 100%;
+            resize: vertical;
+        }
+
+        /* Add these styles for the messages */
+        .message-container {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Updated styles for the messages */
+        #thank-you-message,
+        #log-off-success-message {
+            margin-top: 30px; /* Adjust the margin as desired */
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="survey-container">
+        <h2>Anonymous Survey</h2>
+        <form id="survey-form">
+            <div class="form-group">
+                <label for="random-id">6-Digit Random ID:</label>
+                <input type="text" id="random-id" name="random-id" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Any issue experienced in these categories:</label><br>
+                <label class="checkbox-label"><input type="checkbox" name="complaint" value="Safety">Safety</label>
+                <label class="checkbox-label"><input type="checkbox" name="complaint" value="Unfair Work Environment">Unfair Work Environment</label>
+                <label class="checkbox-label"><input type="checkbox" name="complaint" value="Harassment">Harassment</label>
+                <label class="checkbox-label"><input type="checkbox" name="complaint" value="Interpersonal Conflicts">Interpersonal Conflicts</label>
+            </div>
+
+            <div class="form-group">
+                <div class="complaints-box" id="complaints-box"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Additional Comments:</label>
+                <textarea id="additional-comments" name="additional-comments" rows="4"></textarea>
+            </div>
+
+            <div id="submit-button-container">
+                <button type="button" id="submit-button">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="buttons-container">
+        <button type="button" id="log-off-button">Log Off</button>
+        <button type="button" id="home-button">Home</button>
+    </div>
+
+    <!-- The messages will be displayed below this line -->
+    <div class="message-container" id="thank-you-message" style="display: none;">Thank you. The report will be reviewed shortly.</div>
+    <div class="message-container" id="log-off-success-message" style="display: none;">Log Off Successful</div>
+
+    <script>
+        function generateRandomID() {
+            return Math.floor(100000 + Math.random() * 900000);
+        }
+
+        function updateComplaintsBox() {
+            const checkboxes = document.querySelectorAll('input[name="complaint"]:checked');
+            const complaintsBox = document.getElementById('complaints-box');
+            const additionalComments = document.getElementById('additional-comments');
+            complaintsBox.textContent = '';
+
+            checkboxes.forEach((checkbox) => {
+                const complaint = document.createElement('div');
+                complaint.textContent = checkbox.value;
+                complaintsBox.appendChild(complaint);
+            });
+
+            const additionalCommentsText = additionalComments.value.trim();
+            if (additionalCommentsText !== '') {
+                const additionalCommentsDiv = document.createElement('div');
+                additionalCommentsDiv.textContent = `Additional Comments: ${additionalCommentsText}`;
+                complaintsBox.appendChild(additionalCommentsDiv);
+            }
+        }
+
+        function submitSurvey() {
+            const form = document.getElementById('survey-form');
+            const thankYouMessage = document.getElementById('thank-you-message');
+
+            form.style.display = 'none';
+            thankYouMessage.style.display = 'block';
+        }
+
+        function logOff() {
+            const logOffButton = document.getElementById('log-off-button');
+            const logOffSuccessMessage = document.getElementById('log-off-success-message');
+            const surveyContainer = document.getElementById('survey-container');
+            const thankYouMessage = document.getElementById('thank-you-message');
+
+            logOffButton.style.display = 'none';
+            logOffSuccessMessage.style.display = 'block';
+            surveyContainer.style.display = 'none';
+            thankYouMessage.style.display = 'none';
+        }
+
+        window.onload = function () {
+            const randomIDField = document.getElementById('random-id');
+            randomIDField.value = generateRandomID();
+
+            const checkboxes = document.querySelectorAll('input[name="complaint"]');
+            checkboxes.forEach((checkbox) => {
+                checkbox.addEventListener('change', updateComplaintsBox);
+            });
+
+            const submitButton = document.getElementById('submit-button');
+            submitButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                submitSurvey();
+            });
+
+            const logOffButton = document.getElementById('log-off-button');
+            logOffButton.addEventListener('click', logOff);
+        };
+    </script>
+</body>
+
+</html>
